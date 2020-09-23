@@ -1,0 +1,21 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+    {% if article_list %}
+    <ul>
+<br>
+      {% for article in article_list %}
+      <li>
+          <h2><a href="{% url 'article-detail' article.slug %}">{{ article.article_title }}</a></h2>
+          <h3>{{ article.article_additional_title }}</h3>
+          <br><br><br>
+      </li>
+
+      {% endfor %}
+
+    </ul>
+    {% else %}
+      <p>There are no texts.</p>
+    {% endif %}
+{% endblock %}

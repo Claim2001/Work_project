@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Front page</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,500,600,700,800,900" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700,900" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/owl.theme.default.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}" />
+</head>
+
+<body>
+    <div class="wrapper">
+        <header class="header">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="logo">
+                            <h2><a href="{% url 'index' %}">Blog</a></h2>
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="menu">
+                            <ul>
+                                <li class="active"><a href="{% url 'index' %}">Home</a></li>
+                                <li><a href="{% url 'articles' %}">All texts</a></li>
+                              {% if user.is_authenticated %}
+                                <li><a>User: {{ user.get_username }}</a></li>
+                                <li><a href="{% url 'logout'%}?next={{request.path}}">Logout</a></li>
+                              {% else %}
+                                <li><a href="{% url 'login'%}?next={{request.path}}">Login</a></li>
+                                {% endif %}
+                              {% if not user.is_authenticated %}
+                                <li><a href="{% url 'create_user'%}">Log on</a> </li>
+                                {% endif %}
+                              {% if user.is_staff %}
+                                <li><a href="{% url 'article_create' %}">Create Text</a> </li>
+                                            <li><a href="{% url 'article_update' article.pk %}">Edit Blog Post</a></li>
+                              {% endif %}
+                                {% if not user.is_authenticated %}
+<img src="https://static10.tgstat.ru/channels/_0/92/920ee6abac1f21a42741fee8bc5cec19.jpg " height="50" width="100"> : <strong>{{ article.like_set.count }}</strong> (<a href="{% url 'login'%}?next={{request.path}}">Log in to put a like)</a>
+{% endif %}
+{% if user.is_authenticated %}
+<form action="{% url 'article-up' article.id %}" method="post">
+    {% csrf_token %}
+    <input type="image" src="https://static10.tgstat.ru/channels/_0/92/920ee6abac1f21a42741fee8bc5cec19.jpg" height="70" width="70" border="0" alt="Submit">
+    <strong>:    {{ article.like_set.count }}</strong>
+</form>
+<br>
+                                    {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="single-blog-area">
+
+            <div class="container">
+                <div class="row">
+                   <div class="col-md-12">
+                    <div class="border-top">
+                        <div class="col-md-8">
+
+                        <div class="blog-area">
+                            <div class="blog-area-part">
+                                <h1>{{ article.article_title }}</h1>
+                                <div class="for-style">
+                                    <p><h3>{{ article.article_additional_title }}</h3></div>
+
+                                {% if article.article_image %}
+        <p class="box"><img src="{{ article.article_image.url }}" alt="" class="f-left" />  {% endif %}
+                                <h4>  {{ article.article_text }}</h4></p>
+                                <h4>by {{ article.article_user }}</h4>
+                                </div>
+                             {% for comment in article.comments_set.all %}
+       <p> <strong><h3>{{ comment.comments_text }}</h3></strong> <h4> by {{ comment.comments_user }}</h4> </p>
+    {% if user.is_authenticated %}
+    <form action="{% url 'delcomment' comment.id %}" method="post">
+    {% csrf_token %}
+    <input type="submit" value="Delete comment" />
+</form>
+        {% else %}
+    <p><a href="{% url 'login'%}?next={{request.path}}">Login for deleting a comment</a></p>
+    {% endif %}
+    <br><br>
+{% endfor %}
+
+                            {% if perms.catalog.can_mark_returned %}<strong><a href="{% url 'renew-article-staff' article.id %}">Renew</a></strong>
+{% endif %}
+                    {% if user.is_authenticated %}
+                    <form action="{% url 'addcomment' article.id %}" method="post" class="form">
+                        <div class="name">
+                            {% csrf_token %}
+                            {{ form_comments.as_p }}
+                            <input type="submit"  placeholder="Name" class="name" value="Send comment">
+                        </div>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="footer-bg">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <div class="footer-menu">
+                                        <ul>
+                                            <li class="active"><a href="{% url 'index' %}">Home</a></li>
+                                <li><a href="{% url 'articles' %}">All texts</a></li>
+                              {% if user.is_authenticated %}
+                                <li><a>User: {{ user.get_username }}</a></li>
+                                <li><a href="{% url 'logout'%}?next={{request.path}}">Logout</a></li>
+                              {% else %}
+                                <li><a href="{% url 'login'%}?next={{request.path}}">Login</a></li>
+                                {% endif %}
+                              {% if not user.is_authenticated %}
+                                <li><a href="{% url 'create_user'%}">Log on</a> </li>
+                                {% endif %}
+                              {% if user.is_staff %}
+                                <li><a href="{% url 'article_create' %}">Create Text</a> </li>
+            <li><a href="{% url 'article_update' article.pk %}">Edit Blog Post</a></li>
+               <li><a href="{% url 'article_delete' article.pk %}">Delete Blog Post</a></li>
+                              {% endif %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div> .
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'js/active.js' %}"></script>
+    <script src="{% static 'js/isotope.pkgd.js' %}"></script>
+</body>
+
+
+</html>
